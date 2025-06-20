@@ -247,32 +247,24 @@ class EDA:
         st.pyplot(fig)
 
     def plot_region_change_trends(self):
-    st.subheader("📌 Regional Change Analysis")
+    st.subheader("📌 Regional Change Analysis")  # ✅ 이 줄은 반드시 들여쓰기 되어야 해
     df_filtered = self.df[self.df['지역'] != '전국']
     recent = df_filtered[df_filtered['연도'] >= df_filtered['연도'].max() - 5]
-
+    
     pivot = recent.pivot(index='지역', columns='연도', values='인구').dropna()
-
-    # ✅ 여기! 안전하게 지역 이름 영어로 매핑
     pivot.index = pivot.index.map(lambda x: REGION_MAP.get(x, x))
-
+    
     pivot['Change'] = pivot[pivot.columns[-1]] - pivot[pivot.columns[0]]
     pivot['ChangeRate'] = (pivot['Change'] / pivot[pivot.columns[0]]) * 100
     pivot = pivot.sort_values('Change', ascending=False)
 
+    # 아래 그래프 코드들 계속 들여쓰기 유지!
     fig1, ax1 = plt.subplots()
     sns.barplot(x=pivot['Change'] / 1000, y=pivot.index, ax=ax1)
     ax1.set_title("Population Change (K)")
     for i, val in enumerate(pivot['Change'] / 1000):
         ax1.text(val, i, f"{val:,.1f}", va='center')
     st.pyplot(fig1)
-
-    fig2, ax2 = plt.subplots()
-    sns.barplot(x=pivot['ChangeRate'], y=pivot.index, ax=ax2)
-    ax2.set_title("Change Rate (%)")
-    for i, val in enumerate(pivot['ChangeRate']):
-        ax2.text(val, i, f"{val:.1f}%", va='center')
-    st.pyplot(fig2)
 
 
     def show_top_population_changes(self):
